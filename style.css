@@ -1,0 +1,1373 @@
+/* ==========================================================================
+   L'ANGLEÒMETRE - RECURS EDUCATIU DE MESURA D'ANGLES
+   Cicle Superior de Primària - Matemàtiques
+   Estils amb enfocament DUA i Accessibilitat WCAG 2.1 Nivell AA
+   ========================================================================== */
+
+:root {
+  /* Paleta cromàtica accessible (contrast ràtio > 4.5:1 per text) */
+  --color-primary: #1952a5;
+  --color-primary-dark: #0f346b;
+  --color-primary-light: #e8f0fe;
+  --color-accent: #c44000; /* Contrast alt sobre fons clar */
+  --color-accent-hover: #9c3200;
+  --color-success: #1b6d27;
+  --color-success-bg: #eaf6ec;
+  --color-warning: #855300;
+  --color-warning-bg: #fff8e6;
+  --color-error: #a81c1c;
+  --color-error-bg: #fdeeee;
+
+  --color-bg: #f4f7fb;
+  --color-surface: #ffffff;
+  --color-text: #1c2530;
+  --color-text-muted: #4b5868;
+  --color-border: #cdd6e3;
+  --color-focus: #004ecc;
+
+  /* Geometria i mides */
+  --border-radius-sm: 6px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 16px;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.15);
+
+  /* Tipografia accessible */
+  --font-base: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-size-scale: 1rem; /* 16px */
+  --line-height: 1.5;
+}
+
+/* Mode Contrast Alt (Accessibilitat DUA) */
+body.high-contrast {
+  --color-primary: #003087;
+  --color-primary-dark: #001844;
+  --color-primary-light: #ffffff;
+  --color-accent: #8b2500;
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-text: #000000;
+  --color-text-muted: #1a1a1a;
+  --color-border: #000000;
+  --color-focus: #000000;
+  --color-success: #0b4f17;
+  --color-success-bg: #ffffff;
+  --color-error: #800000;
+  --color-error-bg: #ffffff;
+}
+
+body.high-contrast .card,
+body.high-contrast .canvas-container,
+body.high-contrast button,
+body.high-contrast input {
+  border: 2px solid #000000 !important;
+}
+
+/* Escalabilitat de Font per a baixa visió */
+body.font-large {
+  --font-size-scale: 1.15rem;
+}
+body.font-xlarge {
+  --font-size-scale: 1.3rem;
+}
+
+/* Reset i bases */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-base);
+  font-size: var(--font-size-scale);
+  line-height: var(--line-height);
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Enllaç ràpid d'accessibilitat (Skip link) */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 10px;
+  background: var(--color-focus);
+  color: #ffffff;
+  padding: 12px 20px;
+  font-weight: 700;
+  z-index: 9999;
+  border-radius: var(--border-radius-sm);
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 10px;
+  outline: 3px solid #ffcc00;
+}
+
+/* Focus visible universal (WCAG 2.4.7) */
+:focus-visible {
+  outline: 3px solid var(--color-focus) !important;
+  outline-offset: 3px !important;
+}
+
+/* Element només per a lectors de pantalla */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Capçalera de l'aplicació */
+.app-header {
+  background-color: var(--color-surface);
+  border-bottom: 2px solid var(--color-border);
+  padding: 0.75rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.header-content {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: var(--border-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.brand-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  line-height: 1.2;
+}
+
+.brand-subtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+/* Barra d'eines d'Accessibilitat i Preferències */
+.a11y-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-toolbar {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  border: 1px solid var(--color-border);
+  padding: 0.45rem 0.8rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.15s ease;
+}
+
+.btn-toolbar:hover {
+  background: #d4e3fc;
+  border-color: var(--color-primary);
+}
+
+.btn-toolbar[aria-pressed="true"] {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary-dark);
+}
+
+/* Contenidor Principal */
+.main-wrapper {
+  max-width: 1300px;
+  width: 100%;
+  margin: 1.2rem auto;
+  padding: 0 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* Selector de Mode (Pestanyes / Tabs) */
+.mode-nav {
+  display: flex;
+  gap: 0.6rem;
+  background: var(--color-surface);
+  padding: 0.5rem;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 170px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 2px solid transparent;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.tab-btn[aria-selected="true"] {
+  background: var(--color-primary);
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Graella de Treball (Àrea interactiva + Panell de control) */
+.workspace-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 1.2rem;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Targeta / Card */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.2rem;
+}
+
+/* Contenidor de l'Àrea Gràfica SVG */
+.canvas-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.canvas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.canvas-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.canvas-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.btn-secondary {
+  background: #ffffff;
+  color: var(--color-primary-dark);
+  border: 1.5px solid var(--color-primary);
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-secondary:hover {
+  background: var(--color-primary-light);
+}
+
+/* Marc SVG */
+.canvas-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 11;
+  min-height: 400px;
+  max-height: 580px;
+  background: #fbfdff;
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+}
+
+.canvas-container svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Barra de control manual del transportador (Per a teclat / Accessibilitat motriu) */
+.protractor-keyboard-controls {
+  background: #f0f4f9;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.keyboard-controls-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.control-group-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  min-width: 65px;
+}
+
+.btn-kbd {
+  background: #ffffff;
+  color: var(--color-text);
+  border: 1px solid #b0c0d4;
+  border-radius: var(--border-radius-sm);
+  padding: 0.35rem 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  transition: all 0.1s;
+}
+
+.btn-kbd:hover {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
+.btn-kbd:active {
+  transform: translateY(1px);
+}
+
+/* Panell Lateral de Tasques i Retroacció */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.challenge-box {
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary-light);
+  border-left: 6px solid var(--color-primary);
+  border-radius: var(--border-radius-md);
+  padding: 1rem;
+}
+
+.challenge-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.challenge-desc {
+  font-size: 0.95rem;
+  color: var(--color-text);
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+}
+
+/* Formulari de Resposta de l'Alumnat */
+.answer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 0.5rem;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.angle-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.angle-input {
+  width: 100%;
+  padding: 0.65rem 2rem 0.65rem 0.85rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  text-align: right;
+  color: var(--color-text);
+  background: #ffffff;
+}
+
+.angle-input:focus {
+  border-color: var(--color-focus);
+}
+
+.degree-symbol {
+  position: absolute;
+  right: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(196, 64, 0, 0.3);
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.btn-primary:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* Capsa de Retroacció Explicativa */
+.feedback-box {
+  border-radius: var(--border-radius-md);
+  padding: 1rem;
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.feedback-box.visible {
+  display: block;
+}
+
+.feedback-box.success {
+  background-color: var(--color-success-bg);
+  border: 2px solid var(--color-success);
+  color: var(--color-success);
+}
+
+.feedback-box.error {
+  background-color: var(--color-error-bg);
+  border: 2px solid var(--color-error);
+  color: var(--color-error);
+}
+
+.feedback-box.info {
+  background-color: var(--color-primary-light);
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
+.feedback-header {
+  font-weight: 800;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
+}
+
+.feedback-body {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--color-text);
+}
+
+.feedback-detail {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed currentColor;
+  opacity: 0.9;
+}
+
+/* Secció de Bastides Didàctiques (DUA) */
+.scaffolding-box {
+  background: #fdfefe;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.scaffolding-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.scaffolding-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* Acordió de Pistes Esglaonades */
+.hint-accordion {
+  margin-top: 0.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.hint-trigger {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-primary-light);
+  border: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-primary-dark);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hint-content {
+  padding: 0.65rem 0.75rem;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--color-text);
+  background: #fff;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Targeta informativa en Mode Exploració */
+.angle-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.info-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.info-stat-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.info-value {
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--color-primary-dark);
+}
+
+.angle-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-agut {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #7dd3fc;
+}
+
+.badge-recte {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.badge-obtus {
+  background: #ffedd5;
+  color: #c2410c;
+  border: 1px solid #fdba74;
+}
+
+.badge-pla {
+  background: #f3e8ff;
+  color: #7e22ce;
+  border: 1px solid #d8b4fe;
+}
+
+.badge-reflex {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+}
+
+/* Peu de pàgina i Transparència */
+.app-footer {
+  margin-top: auto;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: 1.5rem 1rem;
+}
+
+.footer-content {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+}
+
+.footer-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.footer-link-btn {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: inherit;
+}
+
+.footer-link-btn:hover {
+  color: var(--color-primary-dark);
+}
+
+/* Modal d'Informació Didàctica i Transparència IA */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 10000;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-dialog {
+  background: var(--color-surface);
+  max-width: 720px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--color-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-primary-light);
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #000;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--color-text);
+}
+
+.modal-section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  border-bottom: 2px solid var(--color-primary-light);
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.4rem;
+}
+
+.badge-tag {
+  display: inline-block;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  margin-right: 0.3rem;
+}
+
+/* Animacions suaus */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   ESTILS DEL SISTEMA DE 20 REPTES I AVALUACIÓ (QUALIFICACIÓ / NOTA)
+   ========================================================================== */
+
+/* Capçalera de progrés dels 20 reptes */
+.challenge-progress-header {
+  margin-bottom: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.challenge-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.progress-label-main {
+  color: var(--color-primary-dark);
+}
+
+.progress-score-tag {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--border-radius-sm);
+  font-weight: 800;
+  border: 1px solid var(--color-border);
+}
+
+/* Barra de progrés gràfica accessible */
+.progress-bar-bg {
+  width: 100%;
+  height: 8px;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 5%;
+  background: linear-gradient(90deg, var(--color-primary), #0284c7);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Graella de seguiment dels 20 reptes (Pills / Mini-indicadors) */
+.steps-track {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 0.25rem;
+}
+
+.step-indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.68rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  background: #ffffff;
+  color: var(--color-text-muted);
+  transition: all 0.2s ease;
+}
+
+.step-indicator.pending {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.step-indicator.current {
+  background: var(--color-primary);
+  color: #ffffff;
+  border-color: var(--color-primary-dark);
+  box-shadow: 0 0 0 2px rgba(25, 82, 165, 0.3);
+  transform: scale(1.15);
+}
+
+.step-indicator.success-first {
+  background: #16a34a;
+  color: #ffffff;
+  border-color: #15803d;
+}
+
+.step-indicator.success-retry {
+  background: #d97706;
+  color: #ffffff;
+  border-color: #b45309;
+}
+
+.step-indicator.assisted {
+  background: #64748b;
+  color: #ffffff;
+  border-color: #475569;
+}
+
+/* Botó secundari per veure solució i passar */
+.btn-outline-text {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0.3rem 0;
+  text-align: center;
+  width: 100%;
+  margin-top: 0.4rem;
+}
+
+.btn-outline-text:hover {
+  color: var(--color-accent);
+}
+
+/* Targeta d'Informe Final d'Avaluació */
+.results-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1.5rem;
+  background: #ffffff;
+  border-radius: var(--border-radius-lg);
+  border: 2px solid var(--color-primary);
+  box-shadow: var(--shadow-md);
+  animation: fadeIn 0.4s ease;
+}
+
+.results-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.results-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+}
+
+.results-grade-box {
+  background: linear-gradient(135deg, #f0f7ff, #e0effe);
+  border: 2px solid #bae6fd;
+  border-radius: var(--border-radius-md);
+  padding: 1rem 1.5rem;
+  text-align: center;
+  width: 100%;
+}
+
+.results-grade-num {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.results-level-badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.badge-ae {
+  background: #dcfce7;
+  color: #166534;
+  border: 1.5px solid #86efac;
+}
+
+.badge-an {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1.5px solid #7dd3fc;
+}
+
+.badge-as {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1.5px solid #fde68a;
+}
+
+.badge-na {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1.5px solid #fca5a5;
+}
+
+/* Graella d'Estadístiques Detallades */
+.results-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.results-stat-item {
+  background: #f8fafc;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.results-stat-num {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+}
+
+.results-stat-label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+/* Missatge de diagnòstic i consell docent */
+.results-feedback-box {
+  background: #f0fdf4;
+  border-left: 5px solid #16a34a;
+  border-radius: var(--border-radius-sm);
+  padding: 0.85rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--color-text);
+}
+
+.results-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* ==========================================================================
+   ESTILS DEL SISTEMA DE REGISTRE DE L'ALUMNE/A I FITXA D'ACTIVITAT
+   ========================================================================== */
+
+/* Targeta inicial de registre local de l'alumne/a */
+.student-register-card {
+  background: #f8fafc;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.register-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.register-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.privacy-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #166534;
+  background: #dcfce7;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  border: 1px solid #86efac;
+}
+
+.register-inputs-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.register-field {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.register-field label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.register-field input {
+  padding: 0.45rem 0.65rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background: #ffffff;
+  color: var(--color-text);
+  font-family: inherit;
+}
+
+.register-field input:focus {
+  border-color: var(--color-focus);
+}
+
+.register-disclaimer {
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin-top: 0.1rem;
+}
+
+/* Metadades de l'alumne a l'informe imprès */
+.report-student-meta {
+  display: flex;
+  justify-content: space-between;
+  background: #f1f5f9;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  padding: 0.65rem 0.9rem;
+  font-size: 0.88rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.student-meta-item strong {
+  color: var(--color-primary-dark);
+}
+
+/* Taula del full de registre detallat (20 mesures) */
+.record-table-wrapper {
+  margin-top: 0.5rem;
+  overflow-x: auto;
+}
+
+.record-table-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.record-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  text-align: left;
+  border: 1px solid var(--color-border);
+}
+
+.record-table th,
+.record-table td {
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--color-border);
+}
+
+.record-table th {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-weight: 800;
+  position: sticky;
+  top: 0;
+}
+
+.record-table tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.record-table tr:hover {
+  background-color: #f1f5f9;
+}
+
+/* Insígnies de punts a la taula */
+.badge-score-cell {
+  display: inline-block;
+  font-weight: 800;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.score-full {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.score-mid {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.score-low {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.score-zero {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+/* ==========================================================================
+   ESTILS D'IMPRESSIÓ PER A L'INFORME / CERTIFICAT ESCOLAR (@media print)
+   ========================================================================== */
+@media print {
+  /* Ocultar elements no rellevants per a l'informe imprès */
+  .app-header,
+  .mode-nav,
+  .protractor-keyboard-controls,
+  .canvas-actions,
+  .scaffolding-box,
+  .app-footer,
+  .results-actions,
+  .student-register-card,
+  .skip-link {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 10pt !important;
+  }
+
+  .main-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .workspace-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  .canvas-card {
+    display: none !important; /* A l'informe imprès es prioritza la fitxa de resultats */
+  }
+
+  .results-card {
+    border: 1.5px solid #000000 !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+    padding: 1rem !important;
+  }
+
+  .results-card::before {
+    content: "L'ANGLEÒMETRE - FITXA DE REGISTRE I AVALUACIÓ DE MATEMÀTIQUES";
+    display: block;
+    font-size: 13pt;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 2px solid #000;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+
+  .record-table th {
+    background: #eeeeee !important;
+    color: #000000 !important;
+  }
+
+  .record-table th,
+  .record-table td {
+    border: 1px solid #333333 !important;
+    padding: 3px 6px !important;
+    font-size: 8.5pt !important;
+  }
+}
+
+/* Ajustaments per a dispositius mòbils i PDI */
+@media (max-width: 600px) {
+  .app-header {
+    padding: 0.5rem 1rem;
+  }
+  .brand-title {
+    font-size: 1.2rem;
+  }
+  .tab-btn {
+    min-width: 130px;
+    font-size: 0.88rem;
+    padding: 0.6rem 0.5rem;
+  }
+  .canvas-container {
+    aspect-ratio: 4 / 3;
+    min-height: 320px;
+  }
+}
