@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Recurs educatiu interactiu per a la mesura i comprensió d'angles al Cicle Superior de Primària. Disseny accessible WCAG AA, principis DUA i privadesa total.">
+  <title>L'Angleòmetre: Mesura i Descobreix els Angles | Primària</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Enllaç directe d'accessibilitat per a lectors de pantalla i navegació per teclat (WCAG 2.4.1) -->
+  <a href="#main-content" class="skip-link">Salta directament al contingut principal</a>
+
+  <!-- Zona d'anuncis d'àudio per a lectors de pantalla (ARIA Live Region) -->
+  <div id="sr-announcements" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Capçalera de l'aplicació -->
+  <header class="app-header" role="banner">
+    <div class="header-content">
+      <div class="brand-wrapper">
+        <div class="brand-icon" aria-hidden="true">📐</div>
+        <div>
+          <h1 class="brand-title">L'Angleòmetre</h1>
+          <p class="brand-subtitle">Matemàtiques · Cicle Superior de Primària</p>
+        </div>
+      </div>
+
+      <!-- Barra d'Accessibilitat i Preferències (DUA) -->
+      <nav class="a11y-toolbar" aria-label="Opcions d'accessibilitat i configuració">
+        <button id="btn-high-contrast" class="btn-toolbar" aria-pressed="false" title="Canvia a mode de contrast alt">
+          <span aria-hidden="true">👁️</span> Contrast Alt
+        </button>
+        <button id="btn-font-size" class="btn-toolbar" title="Augmenta la mida del text">
+          <span aria-hidden="true">Aa</span> Lletra
+        </button>
+        <button id="btn-sound-toggle" class="btn-toolbar" aria-pressed="false" title="Activa o desactiva els efectes sonors">
+          🔊 So actiu
+        </button>
+        <button id="btn-speech-toggle" class="btn-toolbar" aria-pressed="false" title="Activa la lectura de retroaccions en veu alta">
+          🗣️ Veu apagada
+        </button>
+        <label for="select-tolerance" class="sr-only">Tolerància d'error de mesura</label>
+        <select id="select-tolerance" class="btn-toolbar" title="Ajusta el marge de tolerància per atenció a la diversitat">
+          <option value="2" selected>Marge: ±2º (Estàndard)</option>
+          <option value="1">Marge: ±1º (Precisió alta)</option>
+          <option value="4">Marge: ±4º (Suport motriu)</option>
+        </select>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Contingut Principal -->
+  <main id="main-content" class="main-wrapper" role="main">
+
+    <!-- Selector de Modes (Pestanyes accessibles WCAG) -->
+    <nav class="mode-nav" role="tablist" aria-label="Modes de treball interactiu">
+      <button id="tab-explore" class="tab-btn" role="tab" aria-selected="true" aria-controls="explore-panel">
+        <span aria-hidden="true">🔬</span> 1. Explora i Aprèn
+      </button>
+      <button id="tab-challenge-measure" class="tab-btn" role="tab" aria-selected="false" aria-controls="challenge-measure-panel">
+        <span aria-hidden="true">📏</span> 2. Repte de Mesura
+      </button>
+      <button id="tab-challenge-build" class="tab-btn" role="tab" aria-selected="false" aria-controls="challenge-build-panel">
+        <span aria-hidden="true">✏️</span> 3. Dibuixa l'Angle
+      </button>
+    </nav>
+
+    <!-- Àrea de Treball en Graella (Simulador SVG + Panell Lateral) -->
+    <div class="workspace-grid">
+      
+      <!-- Zona Visual Interactiva (Canvas SVG) -->
+      <section class="card canvas-card" aria-label="Àrea interactiva de mesura d'angles">
+        <div class="canvas-header">
+          <h2 class="canvas-title">
+            <span aria-hidden="true">🧭</span> Banc de Treball Geomètric
+          </h2>
+          <div class="canvas-actions">
+            <button id="btn-align-vertex" class="btn-secondary" title="Col·loca el centre del transportador just sobre el vèrtex de l'angle">
+              <span aria-hidden="true">🎯</span> Alinea al vèrtex
+            </button>
+            <button id="btn-align-base" class="btn-secondary" title="Gira el transportador perquè el 0º quedi sobre el braç base">
+              <span aria-hidden="true">🔄</span> Alinea a la base
+            </button>
+            <button id="btn-reset-protractor" class="btn-secondary" title="Retorna el transportador a la posició inicial">
+              <span aria-hidden="true">↩️</span> Restaura
+            </button>
+          </div>
+        </div>
+
+        <!-- Contenidor SVG del simulador -->
+        <div class="canvas-container" id="canvas-container">
+          <svg id="geometry-canvas" viewBox="0 0 760 520" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Simulador gràfic amb angle geomètric i transportador d'angles mòbil graduat de 0 a 180 graus">
+            <!-- Es construeix dinàmicament per protractor.js -->
+          </svg>
+        </div>
+
+        <!-- Panell d'Accessibilitat Motriu i Teclat (WCAG 2.1.1) -->
+        <div class="protractor-keyboard-controls" aria-label="Controls accessibles per teclat del transportador">
+          <p class="keyboard-controls-title">
+            <span aria-hidden="true">⌨️</span> Controls accessibles per moure i rotar el transportador:
+          </p>
+          <div class="controls-row">
+            <span class="control-group-label">Moure:</span>
+            <button id="btn-move-left" class="btn-kbd" aria-label="Desplaça el transportador cap a l'esquerra">← Esquerra</button>
+            <button id="btn-move-right" class="btn-kbd" aria-label="Desplaça el transportador cap a la dreta">→ Dreta</button>
+            <button id="btn-move-up" class="btn-kbd" aria-label="Desplaça el transportador cap amunt">↑ Amunt</button>
+            <button id="btn-move-down" class="btn-kbd" aria-label="Desplaça el transportador cap avall">↓ Avall</button>
+          </div>
+          <div class="controls-row">
+            <span class="control-group-label">Rotar:</span>
+            <button id="btn-rotate-ccw5" class="btn-kbd" aria-label="Gira el transportador 5 graus en sentit antihorari">-5º</button>
+            <button id="btn-rotate-ccw" class="btn-kbd" aria-label="Gira el transportador 1 grau en sentit antihorari">-1º</button>
+            <button id="btn-rotate-cw" class="btn-kbd" aria-label="Gira el transportador 1 grau en sentit horari">+1º</button>
+            <button id="btn-rotate-cw5" class="btn-kbd" aria-label="Gira el transportador 5 graus en sentit horari">+5º</button>
+            <span style="font-size: 0.8rem; color: var(--color-text-muted); margin-left: auto;">
+              (També pots utilitzar les tecles de fletxa o arrossegar amb el ratolí/dit)
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panell Lateral (Instruccions, Repte, Retroacció i Bastides DUA) -->
+      <aside class="sidebar">
+
+        <!-- ================= PANELL MODE 1: EXPLORACIÓ ================= -->
+        <div id="explore-panel" class="card angle-info-card" role="tabpanel" aria-labelledby="tab-explore">
+          <h2 class="challenge-title">
+            <span aria-hidden="true">💡</span> Explorador d'Angles
+          </h2>
+          <p class="challenge-desc">
+            Arrossega el braç de color taronja o fes servir els botons per modificar l'angle. Observa com canvia la seva mida i classificació!
+          </p>
+
+          <div class="info-stat-row">
+            <span class="info-label">Obertura:</span>
+            <span id="explore-angle-val" class="info-value">55º</span>
+          </div>
+          <div class="info-stat-row">
+            <span class="info-label">Classificació:</span>
+            <span id="explore-type-badge" class="angle-badge badge-agut">Angle Agut</span>
+          </div>
+          <div class="info-stat-row" style="flex-direction: column; align-items: flex-start; gap: 0.3rem;">
+            <span class="info-label">Definició matemàtica:</span>
+            <span id="explore-type-desc" style="font-size: 0.9rem; color: var(--color-text);">Menys de 90º: Més tancat que un angle recte.</span>
+          </div>
+          <div class="info-stat-row" style="flex-direction: column; align-items: flex-start; gap: 0.3rem;">
+            <span class="info-label">On el trobem al nostre voltant?</span>
+            <span id="explore-real-analogy" style="font-size: 0.88rem; color: var(--color-text-muted); font-style: italic;">
+              Com una llesca de pizza o el bec d'un ocell.
+            </span>
+          </div>
+        </div>
+
+        <!-- ================= PANELL MODE 2: REPTE DE MESURA (20 REPTES I AVALUACIÓ) ================= -->
+        <div id="challenge-measure-panel" class="card" role="tabpanel" aria-labelledby="tab-challenge-measure" style="display: none;">
+          
+          <!-- Capçalera del Progrés dels 20 Reptes -->
+          <div id="challenge-active-container">
+            
+            <!-- Targeta de Registre Local de l'Alumne/a (Sense comptes ni servidors externs) -->
+            <div class="student-register-card" id="student-register-box">
+              <div class="register-header">
+                <span class="register-title">
+                  <span aria-hidden="true">👤</span> Fitxa de Registre de l'Alumne/a
+                </span>
+                <span class="privacy-pill">
+                  <span aria-hidden="true">🔒</span> 100% Local · Sense dades a servidors
+                </span>
+              </div>
+              <div class="register-inputs-row">
+                <div class="register-field">
+                  <label for="input-student-name">Nom o Àlies:</label>
+                  <input type="text" id="input-student-name" placeholder="Ex: Mariona o Alumne 12" maxlength="40">
+                </div>
+                <div class="register-field">
+                  <label for="input-student-group">Grup / Classe:</label>
+                  <input type="text" id="input-student-group" placeholder="Ex: 5è B o 6è A" maxlength="25">
+                </div>
+                <div class="register-field">
+                  <label for="input-student-date">Data:</label>
+                  <input type="text" id="input-student-date" readonly>
+                </div>
+              </div>
+              <p class="register-disclaimer">
+                Aquestes dades s'utilitzen només per encapçalar el teu informe d'avaluació imprès o descarregat.
+              </p>
+            </div>
+
+            <div class="challenge-progress-header">
+              <div class="challenge-progress-meta">
+                <span class="progress-label-main">
+                  Repte <span id="challenge-current-num">1</span> de 20
+                </span>
+                <span class="progress-score-tag">
+                  Nota provisional: <span id="challenge-current-score">0.0</span> / 10
+                </span>
+              </div>
+              <div class="progress-bar-bg" aria-hidden="true">
+                <div id="challenge-progress-fill" class="progress-bar-fill" style="width: 5%;"></div>
+              </div>
+              <div id="challenge-steps-track" class="steps-track" aria-label="Seguiment dels 20 reptes">
+                <!-- Es generen dinàmicament 20 mini-indicadors per app.js -->
+              </div>
+            </div>
+
+            <div class="challenge-box">
+              <h2 id="challenge-title" class="challenge-title">🛹 Rampa de monopatí</h2>
+              <p id="challenge-desc" class="challenge-desc">
+                Mesura la inclinació d'aquesta rampa per saber si és apta per a principiants.
+              </p>
+
+              <form id="measure-form" class="answer-form" onsubmit="return false;">
+                <label for="answer-angle" style="font-weight: 700; font-size: 0.95rem;">
+                  Quants graus (º) mesura aquest angle?
+                </label>
+                <div class="input-row">
+                  <div class="angle-input-wrapper">
+                    <input type="number" id="answer-angle" class="angle-input" min="0" max="360" step="1" placeholder="Ex: 45" required aria-describedby="feedback-body">
+                    <span class="degree-symbol" aria-hidden="true">º</span>
+                  </div>
+                  <button type="submit" id="btn-check-answer" class="btn-primary">
+                    Comprova
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Caixa de Retroacció Pedagògica Explicativa -->
+            <div id="feedback-box" class="feedback-box" role="alert" aria-live="assertive">
+              <div id="feedback-title" class="feedback-header"></div>
+              <div id="feedback-body" class="feedback-body"></div>
+              <div id="feedback-detail" class="feedback-detail"></div>
+            </div>
+
+            <!-- Botó per mostrar la solució si s'encalla després de diversos intents -->
+            <button id="btn-reveal-solution" class="btn-outline-text" type="button" style="display: none;">
+              💡 Veure la solució i continuar al següent repte (0 punts)
+            </button>
+
+            <button id="btn-next-challenge" class="btn-primary" style="display: none; width: 100%; margin-top: 0.8rem;">
+              Següent repte ➔
+            </button>
+          </div>
+
+          <!-- Targeta d'Informe Final d'Avaluació (Es mostra després de completar els 20 reptes) -->
+          <div id="challenge-results-card" class="results-card" style="display: none;">
+            <div class="results-header">
+              <div style="font-size: 2.5rem;" aria-hidden="true">🏆</div>
+              <h2 class="results-title">Informe Final d'Avaluació i Registre</h2>
+              <p style="font-size: 0.9rem; color: var(--color-text-muted);">
+                Has completat la sèrie oficial de 20 reptes de mesura d'angles.
+              </p>
+            </div>
+
+            <!-- Metadades de l'alumne a l'informe -->
+            <div class="report-student-meta">
+              <div class="student-meta-item">
+                <strong>Alumne/a:</strong> <span id="summary-student-name">Anònim/a</span>
+              </div>
+              <div class="student-meta-item">
+                <strong>Grup / Classe:</strong> <span id="summary-student-group">Sense especificar</span>
+              </div>
+              <div class="student-meta-item">
+                <strong>Data de realització:</strong> <span id="summary-session-date">-</span>
+              </div>
+            </div>
+
+            <div class="results-grade-box">
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase;">
+                Qualificació Global
+              </div>
+              <div id="results-final-grade" class="results-grade-num">9.5</div>
+              <div style="font-size: 1rem; color: var(--color-text-muted); font-weight: bold;">sobre 10</div>
+              <div>
+                <span id="results-level-badge" class="results-level-badge badge-ae">
+                  🌟 Assoliment Excel·lent (AE)
+                </span>
+              </div>
+            </div>
+
+            <div class="results-stats-grid">
+              <div class="results-stat-item">
+                <span id="results-stat-first" class="results-stat-num">16</span>
+                <span class="results-stat-label">Encertats al 1r intent (0.5 pts cadascun)</span>
+              </div>
+              <div class="results-stat-item">
+                <span id="results-stat-retry" class="results-stat-num">3</span>
+                <span class="results-stat-label">Encertats al 2n intent o amb suport</span>
+              </div>
+              <div class="results-stat-item">
+                <span id="results-stat-scale-errors" class="results-stat-num">1</span>
+                <span class="results-stat-label">Errors de doble escala superats</span>
+              </div>
+              <div class="results-stat-item">
+                <span id="results-stat-accuracy" class="results-stat-num">95%</span>
+                <span class="results-stat-label">Taxa d'èxit global</span>
+              </div>
+            </div>
+
+            <div id="results-feedback-box" class="results-feedback-box">
+              <!-- Missatge pedagògic docent personalitzat generat per app.js -->
+            </div>
+
+            <!-- Taula del Full de Registre Detallat (20 mesures) -->
+            <div class="record-table-wrapper">
+              <h3 class="record-table-title">
+                <span aria-hidden="true">📋</span> Full de Registre de les 20 Mesures de l'Alumne/a
+              </h3>
+              <table class="record-table" id="student-record-table" aria-label="Registre detallat de les mesures i puntuacions dels 20 reptes">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Situació / Context</th>
+                    <th scope="col">Tipus</th>
+                    <th scope="col">Mesura Real</th>
+                    <th scope="col">Resposta Alumne</th>
+                    <th scope="col">Intents</th>
+                    <th scope="col">Punts</th>
+                  </tr>
+                </thead>
+                <tbody id="record-table-body">
+                  <!-- Generat dinàmicament per app.js -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="results-actions">
+              <button id="btn-print-report" class="btn-secondary" type="button" style="justify-content: center; padding: 0.7rem;">
+                <span aria-hidden="true">🖨️</span> Imprimeix o desa la fitxa en PDF
+              </button>
+              <button id="btn-export-csv" class="btn-secondary" type="button" style="justify-content: center; padding: 0.7rem;">
+                <span aria-hidden="true">📥</span> Descarrega el registre en CSV (Excel)
+              </button>
+              <button id="btn-restart-challenges" class="btn-primary" type="button" style="justify-content: center;">
+                <span aria-hidden="true">🔄</span> Tornar a fer els 20 reptes
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= PANELL MODE 3: REPTE DE CONSTRUCCIÓ ================= -->
+        <div id="challenge-build-panel" class="card" role="tabpanel" aria-labelledby="tab-challenge-build" style="display: none;">
+          <div class="challenge-box">
+            <h2 class="challenge-title">
+              <span aria-hidden="true">🎯</span> Missió de Dibuix
+            </h2>
+            <p class="challenge-desc">
+              Modifica l'angle arrossegant el braç taronja fins a construir exactament un angle de:
+            </p>
+            <div style="text-align: center; margin: 0.5rem 0;">
+              <span id="build-target-text" style="font-size: 2.2rem; font-weight: 900; color: var(--color-primary-dark);">60º</span>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--color-text-muted); text-align: center;">
+              Obertura actual: <strong id="build-current-val">20º</strong>
+            </p>
+            <button id="btn-check-build" class="btn-primary" style="width: 100%; margin-top: 0.8rem;">
+              Comprova la construcció
+            </button>
+          </div>
+
+          <!-- Retroacció mode construcció -->
+          <div id="build-feedback-box" class="feedback-box" role="alert" aria-live="assertive">
+            <div id="build-feedback-title" class="feedback-header"></div>
+            <div id="build-feedback-body" class="feedback-body"></div>
+          </div>
+
+          <button id="btn-next-build" class="btn-primary" style="display: none; width: 100%; margin-top: 0.8rem;">
+            Nou angle per construir ➔
+          </button>
+        </div>
+
+        <!-- ================= SECCIÓ DE BASTIDES DIDÀCTIQUES (DUA) ================= -->
+        <section class="card scaffolding-box" aria-label="Suports i bastides per a l'aprenentatge">
+          <h3 class="scaffolding-title">
+            <span aria-hidden="true">🛠️</span> Bastides i Ajudes d'Aprenentatge (DUA)
+          </h3>
+          
+          <div class="scaffolding-toggles">
+            <label class="toggle-label" title="Mostra una referència visual d'angle recte de 90 graus">
+              <input type="checkbox" id="chk-90-guide">
+              <span>Guia d'angle recte (línia de 90º)</span>
+            </label>
+
+            <label class="toggle-label" title="Ressalta en color verd l'escala que comença pel zero correcte">
+              <input type="checkbox" id="chk-scale-guide">
+              <span>Guia de l'escala correcta (0º a la base)</span>
+            </label>
+          </div>
+
+          <!-- Acordió de Pistes Esglaonades -->
+          <div class="hint-accordion">
+            <button id="btn-hint-trigger" class="hint-trigger" type="button" aria-expanded="false" aria-controls="hint-content">
+              <span>💡 Necessites una pista?</span>
+              <span aria-hidden="true">▼</span>
+            </button>
+            <div id="hint-content" class="hint-content" style="display: none;">
+              <p id="hint-text">Fes clic per rebre una pista progressiva sense penalització.</p>
+            </div>
+          </div>
+        </section>
+
+      </aside>
+    </div>
+  </main>
+
+  <!-- Peu de pàgina accessible i informatiu -->
+  <footer class="app-footer" role="contentinfo">
+    <div class="footer-content">
+      <div>
+        <p><strong>L'Angleòmetre</strong> · Recurs educatiu obert de Matemàtiques per al Cicle Superior de Primària.</p>
+        <p style="font-size: 0.82rem; margin-top: 0.25rem;">
+          🔒 <strong>Protecció de dades:</strong> No es recopila cap dada personal ni s'utilitzen galetes de rastreig. Ús 100% autònom a l'aula.
+        </p>
+      </div>
+      <div class="footer-links">
+        <button id="btn-open-pedagogy" class="footer-link-btn" type="button">
+          📋 Marc pedagògic, DUA i transparència IA
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal accessible sobre Marc Pedagògic, DUA i Transparència IA (WCAG 2.1 AA) -->
+  <div id="modal-pedagogy" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-pedagogy-title" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 id="modal-pedagogy-title" class="modal-title">Rigor Pedagògic, Inclusió i Transparència</h2>
+        <button id="btn-close-pedagogy" class="modal-close-btn" aria-label="Tanca la finestra informativa">✕</button>
+      </div>
+      <div class="modal-body">
+        
+        <section>
+          <h3 class="modal-section-title">1. Objectius Didàctics i Currículum (Cicle Superior)</h3>
+          <p>
+            Aquest recurs està dissenyat segons el currículum de l'educació primària (Àrea de Matemàtiques, Sentit Espacial i Mesura). Treballa:
+          </p>
+          <ul style="padding-left: 1.4rem; margin-top: 0.4rem;">
+            <li>Comprensió del concepte d'angle com a obertura entre dues semirectes que comparteixen el vèrtex.</li>
+            <li>Classificació canònica: agut (&lt;90º), recte (=90º), obtús (&gt;90º i &lt;180º), pla (=180º) i reflex (&gt;180º).</li>
+            <li>Ús instrumental del transportador d'angles sexagesimal (semicercle graduat de 0 a 180º).</li>
+            <li>Contextualització en situacions quotidianes (rampes, rellotges, tisores, teulades).</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3 class="modal-section-title">2. Aplicació del Disseny Universal per a l'Aprenentatge (DUA)</h3>
+          <p>
+            S'eliminen barreres d'accés i participació mitjançant:
+          </p>
+          <ul style="padding-left: 1.4rem; margin-top: 0.4rem;">
+            <li><strong>Múltiples formes de representació:</strong> Doble escala amb codi numèric i visual, guia opcional de 90º per a contrastar estimacions, i analogies amb elements del món real.</li>
+            <li><strong>Múltiples formes d'acció i expressió:</strong> Interacció per arrossegament (ratolí/tàctil) o mitjançant botons de motricitat assistida ("Alinea al vèrtex", passos de ±1º i ±5º, navegació per teclat).</li>
+            <li><strong>Múltiples formes d'implicació:</strong> Pistes esglaonades que guien sense penalitzar, llibertat en mode explorador i reptes contextualitzats amb tolerància ajustable (±1º, ±2º, ±4º).</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3 class="modal-section-title">3. Tractament Pedagògic de l'Error Típic (Doble Escala)</h3>
+          <p>
+            La majoria de l'alumnat de primària comet l'error de llegir l'escala complementària (per exemple, llegir 50º en lloc de 130º). El sistema incorpora un algoritme diagnòstic que detecta específicament aquest patró i genera una retroacció formativa explicant per què passa i com localitzar el 0º de referència.
+          </p>
+        </section>
+
+        <section>
+          <h3 class="modal-section-title">4. Accessibilitat Web (WCAG 2.1 Nivell AA) i Privadesa</h3>
+          <p>
+            <span class="badge-tag">WCAG AA</span> <span class="badge-tag">Sense Galetes</span> <span class="badge-tag">100% Client-Side</span>
+          </p>
+          <p style="margin-top: 0.4rem;">
+            Ràtio de contrast superior a 4.5:1, mode de contrast alt disponible, mides de lletra ajustables, focus visible en tots els elements interactius, navegabilitat completa per teclat i compatibilitat amb lectors de pantalla mitjançant etiquetes ARIA i síntesi de veu opcional. L'activitat funciona 100% en local sense registrar cap dada personal de l'alumnat ni fer connexions a servidors de tercers.
+          </p>
+        </section>
+
+        <section>
+          <h3 class="modal-section-title">5. Nota de Transparència sobre l'Ús d'IA i Revisió Docent</h3>
+          <p>
+            Aquest recurs ha estat co-creat utilitzant eines d'intel·ligència artificial com a assistent tècnic per a la programació web accessible (HTML5, SVG interactiu, CSS accessible i JavaScript pur).
+          </p>
+          <p style="margin-top: 0.4rem; background: var(--color-primary-light); padding: 0.75rem; border-radius: var(--border-radius-sm); border-left: 4px solid var(--color-primary);">
+            <strong>Declaració de revisió docent:</strong> L'enfocament metodològic, la seqüenciació de continguts, la terminologia en llengua catalana, la detecció diagnòstica de concepcions alternatives (errors de lectura del transportador) i les pautes DUA han estat expressament seleccionades, verificades i validades amb criteri pedagògic docent per al seu ús a les aules de Primària.
+          </p>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts locals (Zero dependències externes, 100% autònom) -->
+  <script src="js/audio.js"></script>
+  <script src="js/protractor.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
